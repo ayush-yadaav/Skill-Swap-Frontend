@@ -22,7 +22,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080/api/skills",
+  baseURL: "https://skill-sqap-backend.vercel.app/api/skills",
   withCredentials: true,
 });
 
@@ -36,7 +36,7 @@ export const upsertSkillProfile = async (token, data) => {
 
 // get all profiles (optional)
 export const getAllSkillProfiles = async (token) => {
-  const res = await axios.get("http://localhost:8080/api/skills", {
+  const res = await axios.get("https://skill-sqap-backend.vercel.app/api/skills", {
     headers: { Authorization: `Bearer ${token}` },
     withCredentials: true,
   });

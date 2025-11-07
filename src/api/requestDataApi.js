@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080/api/request",
+  baseURL: "hhttps://skill-sqap-backend.vercel.app/api/request",
   withCredentials: true,
 });
 

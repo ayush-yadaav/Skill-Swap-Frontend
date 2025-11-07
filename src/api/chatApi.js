@@ -1,54 +1,7 @@
-// import axios from "axios";
-
-// const API = axios.create({
-//   baseURL: "http://localhost:8080/api/chat",    // backend port
-//   withCredentials: true,
-// });
-
-// export const getUserChats = async (token) => {
-//   const res = await API.get("/user/chats", {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-//   return res.data;
-// };
-
-// export const getMessagesByRoom = async (token, chatRoomId) => {
-//   const res = await API.get(`/${chatRoomId}`, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-//   return res.data;
-// };
-
-// export const sendMessage = async (token, data) => {
-//   const res = await API.post("/send", data, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-//   return res.data;
-// };
-
-
-// /** 🆕 mark all messages in room as read */
-// export const markMessagesAsRead = async (token, chatRoomId) =>
-//   await axios.put(`${API_URL}/read/${chatRoomId}`, {}, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-
-// /** 🆕 delete a single message */
-// export const deleteMessageApi = async (token, messageId) =>
-//   await axios.delete(`${API_URL}/message/${messageId}`, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-
-// /** 🆕 delete an entire chat */
-// export const deleteChatApi = async (token, chatRoomId) =>
-//   await axios.delete(`${API_URL}/chat/${chatRoomId}`, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-
 import axios from "axios";
 
 // ✅ define once, top of file
-const API_URL = "http://localhost:8080/api"; 
+const API_URL = "https://skill-sqap-backend.vercel.app/api"; 
 // adjust to your backend route base, if it’s just /api or /api/chat, set accordingly
 
 // --- Existing endpoints ---

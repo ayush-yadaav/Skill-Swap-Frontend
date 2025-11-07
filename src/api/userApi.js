@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080/api", // adjust if your backend is deployed
+  baseURL: "https://skill-sqap-backend.vercel.app/api", // adjust if your backend is deployed
 });
 
 // --- REGISTER USER ---
