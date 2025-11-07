@@ -52,61 +52,61 @@ const Discover = () => {
     );
 
   return (
-   
-   <>
 
-   <AfterLoginNavbar />
-    <div className="min-h-screen bg-muted/10 px-6 lg:px-14 py-20">
-      <div className="flex flex-col md:flex-row justify-between md:items-center mb-10 gap-4">
-        <div>
-          <h1 className="text-4xl font-bold mb-2">Find Your Match</h1>
-          <p className="text-muted-foreground">
-            Discover amazing people to exchange skills with
-          </p>
+    <>
+
+      <AfterLoginNavbar />
+      <div className="min-h-screen bg-muted/10 px-6 lg:px-14 py-20">
+        <div className="flex flex-col md:flex-row justify-between md:items-center mb-10 gap-4">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Find Your Match</h1>
+            <p className="text-muted-foreground">
+              Discover amazing people to exchange skills with
+            </p>
+          </div>
+          <button
+            onClick={() => setFilterOpen(true)}
+            className="flex items-center gap-2 border border-border px-4 py-2 rounded-xl shadow bg-white hover:bg-muted/20 transition"
+          >
+            <SlidersHorizontal className="w-4 h-4 text-primary" /> Advanced Filters
+          </button>
         </div>
-        <button
-          onClick={() => setFilterOpen(true)}
-          className="flex items-center gap-2 border border-border px-4 py-2 rounded-xl shadow bg-white hover:bg-muted/20 transition"
-        >
-          <SlidersHorizontal className="w-4 h-4 text-primary" /> Advanced Filters
-        </button>
-      </div>
 
-      <SearchBar value={search} onChange={setSearch} />
+        <SearchBar value={search} onChange={setSearch} />
 
-      {/* grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {searched.map((p) => (
-          <ProfileCard
-            key={p._id}
-            profile={p}
-            onView={() => setViewProfile(p)}
-            onRequest={() => setSendTo(p)}
+        {/* grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {searched.map((p) => (
+            <ProfileCard
+              key={p._id}
+              profile={p}
+              onView={() => setViewProfile(p)}
+              onRequest={() => setSendTo(p)}
+            />
+          ))}
+        </div>
+
+        {filterOpen && (
+          <FilterModal
+            token={token}
+            close={() => setFilterOpen(false)}
+            setProfiles={setFilteredData}
           />
-        ))}
+        )}
+
+        {sendTo && <RequestModal sendTo={sendTo} close={() => setSendTo(null)} />}
+        {viewProfile && (
+          <ProfileModal
+            profile={viewProfile}
+            close={() => setViewProfile(null)}
+            onRequest={() => {
+              setViewProfile(null);
+              setSendTo(viewProfile);
+            }}
+          />
+        )}
       </div>
-
-      {filterOpen && (
-        <FilterModal
-          token={token}
-          close={() => setFilterOpen(false)}
-          setProfiles={setFilteredData}
-        />
-      )}
-
-      {sendTo && <RequestModal sendTo={sendTo} close={() => setSendTo(null)} />}
-      {viewProfile && (
-        <ProfileModal
-          profile={viewProfile}
-          close={() => setViewProfile(null)}
-          onRequest={() => {
-            setViewProfile(null);
-            setSendTo(viewProfile);
-          }}
-        />
-      )}
-    </div>
-   </>
+    </>
 
   );
 };
