@@ -12,7 +12,7 @@ import {
 } from "../api/chatApi";
 import AfterLoginNavbar from "../components/Navbar/AfterLoginNavbar";
 
-const SOCKET_URL = "https://skill-sqap-backend.vercel.app/";
+const SOCKET_URL = "https://skill-swap-backend-gqfo.onrender.com/";
 
 const MessagesPage = () => {
   const stored = JSON.parse(localStorage.getItem("user"));

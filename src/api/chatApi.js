@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // ✅ define once, top of file
-const API_URL = "https://skill-sqap-backend.vercel.app/api"; 
+const API_URL = "https://skill-swap-backend-gqfo.onrender.com/api"; 
 // adjust to your backend route base, if it’s just /api or /api/chat, set accordingly
 
 // --- Existing endpoints ---
