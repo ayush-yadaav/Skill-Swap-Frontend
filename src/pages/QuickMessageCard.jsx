@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { sendMessage } from "../api/chatApi";
+import toast from "react-hot-toast";
 
-/**
- * Direct message popup – sends payload identical to your Postman test.
- */
 const QuickMessageCard = ({ receiverId, receiverName, onClose }) => {
   const stored = JSON.parse(localStorage.getItem("user"));
   const token = stored?.token;
@@ -13,23 +11,27 @@ const QuickMessageCard = ({ receiverId, receiverName, onClose }) => {
   const [sending, setSending] = useState(false);
 
   const handleSend = async () => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      toast.error("Message cannot be empty.");
+      return;
+    }
+
     setSending(true);
 
     try {
-      // 👇 exact shape that works in Postman
       const payload = {
-        receiverId,                        // user you’re messaging
-        chatRoomId: `room_${receiverName.toLowerCase()}_temp`, // sample predictable id
+        receiverId,
+        chatRoomId: `room_${receiverName.toLowerCase()}_temp`,
         message: text.trim(),
       };
 
-      await sendMessage(token, payload);   // uses /api/chat/send route
+      await sendMessage(token, payload);
+      toast.success("Message sent successfully!");
       setText("");
       onClose();
     } catch (err) {
       console.error("Quick message error:", err);
-      alert("Failed to send. Check backend logs.");
+      toast.error("Failed to send message. Please try again.");
     } finally {
       setSending(false);
     }

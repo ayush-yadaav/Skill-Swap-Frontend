@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, MapPin, Calendar, Globe, Save, LogOut } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
+import { Mail, MapPin, Calendar, Save, LogOut } from "lucide-react";
 import { getUserProfile, updateUserProfile } from "../api/profileApi";
 import { getAllSkillProfiles } from "../api/skillsApi";
 import AfterLoginNavbar from "../components/Navbar/AfterLoginNavbar";
@@ -37,25 +38,31 @@ const ProfilePage = () => {
         const found = allSkills.find((p) => p.user._id === userId);
         setSkillData(found || null);
       })
-      .catch((err) => console.error("Fetch error:", err))
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        toast.error("Error loading profile data");
+      })
       .finally(() => setLoading(false));
   }, [token, userId]);
 
   const handleSave = async () => {
     setSaving(true);
+    const savingToast = toast.loading("Saving changes...");
     try {
       const res = await updateUserProfile(token, profile);
-      alert(res.message || "Profile updated successfully");
+      toast.success(res.message || "Profile updated successfully");
     } catch (err) {
-      alert(err.response?.data?.message || "Error updating profile");
+      toast.error(err.response?.data?.message || "Error updating profile");
     } finally {
       setSaving(false);
+      toast.dismiss(savingToast);
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/login");
+    toast.success("Logged out successfully");
+    setTimeout(() => navigate("/login"), 1000);
   };
 
   if (loading)
@@ -71,7 +78,9 @@ const ProfilePage = () => {
   return (
     <>
       <AfterLoginNavbar />
-      <div className="min-h-screen bg-gradient-to-b from-muted/20 via-white to-muted/20 flex flex-col items-center p-6">
+      <Toaster position="top-center" reverseOrder={false} />
+
+      <div className="min-h-screen bg-gradient-to-b from-muted/20 via-white to-muted/20 flex flex-col items-center p-4 sm:p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -79,55 +88,54 @@ const ProfilePage = () => {
           className="w-full max-w-3xl"
         >
           {/* header */}
-          <div className="bg-gradient-to-r from-primary to-secondary h-40 rounded-t-3xl relative flex items-start justify-between p-4">
-            {/* top‑right buttons */}
-            <div className="flex items-center gap-3 ml-auto">
+          <div className="bg-gradient-to-r from-primary to-secondary h-36 sm:h-40 rounded-t-3xl relative flex flex-col sm:flex-row sm:items-start justify-between p-3 sm:p-4">
+            {/* buttons */}
+            <div className="flex items-center gap-2 sm:gap-3 ml-auto flex-wrap sm:flex-nowrap">
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 bg-white/80 hover:bg-white text-primary font-semibold px-4 py-2 rounded-full shadow transition"
+                className="flex items-center gap-2 bg-white/80 hover:bg-white text-primary font-semibold px-3 sm:px-4 py-2 rounded-full shadow transition text-sm sm:text-base"
               >
                 <Save className="w-4 h-4" />
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? "Saving..." : "Save"}
               </button>
 
-              {/* 🔒 Logout button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 bg-white/80 hover:bg-white text-secondary font-semibold px-4 py-2 rounded-full shadow transition"
+                className="flex items-center gap-2 bg-white/80 hover:bg-white text-secondary font-semibold px-3 sm:px-4 py-2 rounded-full shadow transition text-sm sm:text-base"
               >
                 <LogOut className="w-4 h-4" /> Logout
               </button>
             </div>
 
-            {/* avatar and info */}
-            <div className="absolute -bottom-10 left-6 flex items-center gap-4">
+            {/* avatar & info */}
+            <div className="absolute -bottom-10 left-4 sm:left-6 flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
               <img
                 src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
                   profile.name || "User"
                 )}&background=60a5fa&color=fff`}
                 alt="Profile Avatar"
-                className="w-24 h-24 rounded-full border-2 border-blue-400 shadow-md"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-blue-400 shadow-md"
               />
-              <div>
-                <h1 className="text-2xl font-semibold text-black drop-shadow">
+              <div className="mt-2 sm:mt-0">
+                <h1 className="text-xl sm:text-2xl font-semibold text-black drop-shadow">
                   {profile.name}
                 </h1>
-                <div className="flex items-center gap-3 text-sm text-black flex-wrap drop-shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-1 sm:gap-3 text-xs sm:text-sm text-black drop-shadow-sm">
                   <span className="flex items-center gap-1">
                     <Mail className="w-4 h-4" /> {profile.email}
                   </span>
-                  <span className="flex items-center gap-1 text-black">
+                  <span className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />{" "}
                     {profile.location || "Add location"}
                   </span>
-                  <span className="flex items-center gap-1 text-black">
-                    <Calendar className="w-4 h-4 text-black" />{" "}
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />{" "}
                     {profile.createdAt
                       ? `Joined ${new Date(profile.createdAt).toLocaleString(
-                        "en-US",
-                        { month: "long", year: "numeric" }
-                      )}`
+                          "en-US",
+                          { month: "long", year: "numeric" }
+                        )}`
                       : ""}
                   </span>
                 </div>
@@ -136,24 +144,25 @@ const ProfilePage = () => {
           </div>
 
           {/* content */}
-          <div className="bg-white rounded-b-3xl shadow-md mt-14 p-6">
+          <div className="bg-white rounded-b-3xl shadow-md mt-16 sm:mt-14 p-4 sm:p-6">
             {/* Tabs */}
-            <div className="flex justify-center gap-4 mb-6">
+            <div className="flex justify-center flex-wrap gap-2 sm:gap-4 mb-6">
               {["About", "Skills", "Socials"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 rounded-full font-medium transition ${activeTab === tab
+                  className={`px-4 sm:px-6 py-2 rounded-full font-medium transition text-sm sm:text-base ${
+                    activeTab === tab
                       ? "bg-primary text-white shadow"
                       : "bg-muted/50 hover:bg-muted text-muted-foreground"
-                    }`}
+                  }`}
                 >
                   {tab}
                 </button>
               ))}
             </div>
 
-            {/* About (editable) */}
+            {/* About */}
             {activeTab === "About" && (
               <div className="space-y-4">
                 <div>
@@ -169,7 +178,9 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Location</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Location
+                  </label>
                   <input
                     value={profile.location}
                     onChange={(e) =>
@@ -182,10 +193,9 @@ const ProfilePage = () => {
               </div>
             )}
 
-            {/* Skills (read-only) */}
+            {/* Skills */}
             {activeTab === "Skills" && (
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Teach */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-primary">
                     Skills You Can Teach
@@ -195,9 +205,9 @@ const ProfilePage = () => {
                       {teach.map((s) => (
                         <li
                           key={s._id}
-                          className="flex flex-col border rounded-xl p-3 bg-muted/20"
+                          className="flex flex-col border rounded-xl p-3 bg-muted/20 text-sm"
                         >
-                          <span className="font-medium text-sm">{s.name}</span>
+                          <span className="font-medium">{s.name}</span>
                           <span className="text-xs text-muted-foreground">
                             {s.category} • {s.level}
                           </span>
@@ -211,7 +221,6 @@ const ProfilePage = () => {
                   )}
                 </div>
 
-                {/* Learn */}
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-secondary">
                     Skills You Want to Learn
@@ -221,9 +230,9 @@ const ProfilePage = () => {
                       {learn.map((s) => (
                         <li
                           key={s._id}
-                          className="flex flex-col border rounded-xl p-3 bg-muted/20"
+                          className="flex flex-col border rounded-xl p-3 bg-muted/20 text-sm"
                         >
-                          <span className="font-medium text-sm">{s.name}</span>
+                          <span className="font-medium">{s.name}</span>
                           <span className="text-xs text-muted-foreground">
                             {s.category} • {s.level}
                           </span>
@@ -239,7 +248,7 @@ const ProfilePage = () => {
               </div>
             )}
 
-            {/* Socials (editable) */}
+            {/* Socials */}
             {activeTab === "Socials" && (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground mb-4">
@@ -256,7 +265,10 @@ const ProfilePage = () => {
                       onChange={(e) =>
                         setProfile((p) => ({
                           ...p,
-                          socialLinks: { ...p.socialLinks, [key]: e.target.value },
+                          socialLinks: {
+                            ...p.socialLinks,
+                            [key]: e.target.value,
+                          },
                         }))
                       }
                       className="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"

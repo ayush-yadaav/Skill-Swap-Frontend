@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast"; // ✅ import Toaster
 
 // import Navbar from "./components/Navbar";  
 import Landing from "./pages/Landing";
@@ -17,18 +18,9 @@ import MessagesPage from "./pages/MessagesPage";
 import AfterLoginNavbar from "./components/Navbar/AfterLoginNavbar";
 
 // ✅ ProtectedRoute wrapper
-// const ProtectedRoute = ({ children }) => {
-//   const user = localStorage.getItem("user");
-//   if (!user) {
-//     return <Navigate to="/login" replace />;
-//   }
-//   return children;
-// };
-
 const ProtectedRoute = ({ children }) => {
   try {
     const stored = JSON.parse(localStorage.getItem("user"));
-
     const token = stored?.token;
 
     // if no data OR token missing, send back to login
@@ -45,11 +37,11 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <div className="bg-background min-h-screen ">
+    <div className="bg-background min-h-screen">
+      {/* ✅ Global Toaster for all pages */}
+      <Toaster position="top-center" reverseOrder={false} />
+
       {/* 🌟 Navbar dikhega har route pe */}
-
-
-
 
       {/* thoda top padding so content navbar niche dikhe */}
       <div className="pt-20">
@@ -69,7 +61,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* skill setuop after login */}
+
+          {/* skill setup after login */}
           <Route
             path="/skills-setup"
             element={
@@ -78,21 +71,33 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/discover" element={
-            <ProtectedRoute>
-              <Discover />
-            </ProtectedRoute>
-          } />
-          <Route path="/skill-manage" element={
-            <ProtectedRoute>
-              <SkillManager />
-            </ProtectedRoute>
-          } />
-          <Route path="/request-data" element={
-            <ProtectedRoute>
-              <RequestsPage />
-            </ProtectedRoute>
-          } />
+
+          <Route
+            path="/discover"
+            element={
+              <ProtectedRoute>
+                <Discover />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/skill-manage"
+            element={
+              <ProtectedRoute>
+                <SkillManager />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/request-data"
+            element={
+              <ProtectedRoute>
+                <RequestsPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/messages"
@@ -102,22 +107,25 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/user-profile" element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          } />
+
+          <Route
+            path="/user-profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 🔍 view-only profile for any user */}
           <Route
             path="/user/:id"
             element={
-              <ProtectedRoute>  {/* optional — remove if you want visitors to see */}
+              <ProtectedRoute>
                 <ViewProfile />
               </ProtectedRoute>
             }
           />
-
         </Routes>
       </div>
     </div>

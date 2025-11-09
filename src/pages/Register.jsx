@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, MapPin, Lock } from "lucide-react";
 import { registerUser } from "../api/userApi.js";
 import BeforeLoginNavbar from "../components/Navbar/BeforeLoginNavbar.jsx";
+import toast from "react-hot-toast"; // ✅ import toast
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,7 +15,8 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,22 +24,40 @@ const Register = () => {
 
     try {
       const res = await registerUser(formData);
-      alert(res.message || "OTP sent to your email!");
-      // store email in localStorage (for OTP verification use)
+
+      // ✅ success toast
+      toast.success(res.message || "OTP sent to your email!", {
+        style: {
+          borderRadius: "12px",
+          background: "#4ade80",
+          color: "white",
+          fontWeight: "600",
+        },
+        icon: "📩",
+      });
+
+      // store email for OTP verify
       localStorage.setItem("pendingEmail", formData.email);
       navigate("/verify-otp");
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      // ❌ error toast
+      toast.error(err.response?.data?.message || "Registration failed", {
+        style: {
+          borderRadius: "12px",
+          background: "#ef4444",
+          color: "white",
+          fontWeight: "600",
+        },
+        icon: "⚠️",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-
     <>
       <BeforeLoginNavbar />
-
 
       <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4">
         <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl space-y-6">
@@ -46,7 +66,9 @@ const Register = () => {
               SkillSwap
             </h1>
             <h2 className="text-xl font-semibold mt-2">Create Your Account</h2>
-            <p className="text-sm text-muted-foreground">Start exchanging skills today</p>
+            <p className="text-sm text-muted-foreground">
+              Start exchanging skills today
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -113,7 +135,10 @@ const Register = () => {
 
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary font-medium hover:underline">
+            <Link
+              to="/login"
+              className="text-primary font-medium hover:underline"
+            >
               Sign in
             </Link>
           </p>

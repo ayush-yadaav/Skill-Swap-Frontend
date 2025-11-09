@@ -1,8 +1,17 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Home, LogIn, UserPlus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Home, LogIn, UserPlus, Menu, X } from "lucide-react";
 
 const BeforeLoginNavbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const navLinks = [
+    { to: "/", label: "Home", icon: <Home className="w-4 h-4" /> },
+    { to: "/register", label: "Register", icon: <UserPlus className="w-4 h-4" /> },
+    { to: "/login", label: "Login", icon: <LogIn className="w-4 h-4" /> },
+  ];
+
   return (
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
@@ -19,28 +28,55 @@ const BeforeLoginNavbar = () => {
           S
         </Link>
 
-        {/* Links */}
-        <div className="flex items-center gap-6 text-foreground/80">
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
-          >
-            <Home className="w-4 h-4" /> Home
-          </Link>
-          <Link
-            to="/register"
-            className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
-          >
-            <UserPlus className="w-4 h-4" /> Register
-          </Link>
-          <Link
-            to="/login"
-            className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
-          >
-            <LogIn className="w-4 h-4" /> Login
-          </Link>
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-6 text-foreground/80">
+          {navLinks.map((link, idx) => (
+            <Link
+              key={idx}
+              to={link.to}
+              className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
+            >
+              {link.icon}
+              {link.label}
+            </Link>
+          ))}
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden p-2 rounded-lg text-foreground/70 hover:text-primary transition"
+        >
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
+
+      {/* Mobile Dropdown Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-white/90 backdrop-blur-md border-t border-gray-200 px-6 py-4 space-y-4"
+          >
+            <div className="flex flex-col gap-3 text-foreground/80">
+              {navLinks.map((link, idx) => (
+                <Link
+                  key={idx}
+                  to={link.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/40 transition"
+                >
+                  {link.icon}
+                  <span className="font-medium">{link.label}</span>
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 };

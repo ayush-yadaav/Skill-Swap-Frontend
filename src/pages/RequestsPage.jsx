@@ -4,6 +4,7 @@ import { Check, X, MessageSquare } from "lucide-react";
 import { getUserRequests, updateRequestStatus } from "../api/requestDataApi";
 import AfterLoginNavbar from "../components/Navbar/AfterLoginNavbar";
 
+/* ------------------- Request Card ------------------- */
 const RequestCard = ({ req, token, refresh, currentUserId }) => {
   const { sender, receiver, status, offeredSkill, requestedSkill, createdAt } = req;
 
@@ -29,15 +30,16 @@ const RequestCard = ({ req, token, refresh, currentUserId }) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 15 }}
-      className="bg-white rounded-2xl shadow-md px-6 py-4 flex items-center justify-between mb-3"
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-2xl shadow-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-3"
     >
       {/* left: avatar + name */}
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary/60 to-secondary/60 flex items-center justify-center font-semibold text-white">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-primary/60 to-secondary/60 flex items-center justify-center font-semibold text-white">
           {firstLetter}
         </div>
         <div>
-          <h3 className="font-semibold text-foreground">
+          <h3 className="font-semibold text-foreground text-sm sm:text-base">
             {isSender ? receiver?.name : sender?.name}
           </h3>
           <div className="text-xs text-muted-foreground">{timeAgo}</div>
@@ -45,20 +47,20 @@ const RequestCard = ({ req, token, refresh, currentUserId }) => {
       </div>
 
       {/* middle: skill tags */}
-      <div className="flex-1 text-center text-sm text-muted-foreground">
-        <span className="bg-muted/40 px-2 py-1 rounded-full text-foreground font-medium mr-1">
+      <div className="flex flex-wrap justify-center text-xs sm:text-sm text-muted-foreground gap-2 sm:flex-1 sm:text-center">
+        <span className="bg-muted/40 px-2 py-1 rounded-full text-foreground font-medium">
           {offeredSkill}
         </span>
-        ↔
-        <span className="bg-muted/40 px-2 py-1 rounded-full text-foreground font-medium ml-1">
+        <span>↔</span>
+        <span className="bg-muted/40 px-2 py-1 rounded-full text-foreground font-medium">
           {requestedSkill}
         </span>
       </div>
 
       {/* right: status + buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex justify-center sm:justify-end items-center gap-2">
         <span
-          className={`text-xs font-semibold px-3 py-1 rounded-full ${
+          className={`text-xs sm:text-sm font-semibold px-3 py-1 rounded-full ${
             status === "pending"
               ? "bg-yellow-100 text-yellow-700"
               : status === "accepted"
@@ -71,9 +73,9 @@ const RequestCard = ({ req, token, refresh, currentUserId }) => {
           {status}
         </span>
 
-        {/* ✅ show buttons only for receiver when pending */}
+        {/* ✅ receiver buttons */}
         {isReceiver && status === "pending" && (
-          <>
+          <div className="flex gap-1">
             <button
               onClick={() => handleAction("accepted")}
               className="bg-green-100 hover:bg-green-200 text-green-700 rounded-full p-2 transition"
@@ -86,10 +88,10 @@ const RequestCard = ({ req, token, refresh, currentUserId }) => {
             >
               <X className="w-4 h-4" />
             </button>
-          </>
+          </div>
         )}
 
-        {/* 💬 optionally, allow receiver to mark completed */}
+        {/* 💬 mark completed */}
         {isReceiver && status === "accepted" && (
           <button
             onClick={() => handleAction("completed")}
@@ -103,6 +105,7 @@ const RequestCard = ({ req, token, refresh, currentUserId }) => {
   );
 };
 
+/* ------------------- Requests Page ------------------- */
 const RequestsPage = () => {
   const [requests, setRequests] = useState([]);
   const [activeTab, setActiveTab] = useState("pending");
@@ -134,27 +137,27 @@ const RequestsPage = () => {
   return (
     <>
       <AfterLoginNavbar />
-      <div className="min-h-screen bg-gradient-to-b from-muted/30 via-white to-muted/30 flex flex-col items-center p-6">
+      <div className="min-h-screen bg-gradient-to-b from-muted/30 via-white to-muted/30 flex flex-col items-center p-4 sm:p-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           className="w-full max-w-3xl"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Swap Requests
           </h1>
-          <p className="text-muted-foreground mb-8 text-center">
+          <p className="text-muted-foreground mb-6 sm:mb-8 text-center text-sm sm:text-base">
             Manage your skill exchange requests
           </p>
 
-          {/* Tabs */}
-          <div className="flex justify-center gap-8 mb-8">
+          {/* Tabs - scrollable on mobile */}
+          <div className="flex justify-start sm:justify-center gap-3 sm:gap-8 mb-6 overflow-x-auto pb-2 px-1 sm:px-0">
             {["pending", "accepted", "completed"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-full font-medium transition ${
+                className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-full font-medium transition ${
                   activeTab === tab
                     ? "bg-primary text-white shadow"
                     : "bg-white text-muted-foreground hover:bg-muted/30"
@@ -175,19 +178,17 @@ const RequestsPage = () => {
               No {activeTab} requests found.
             </p>
           ) : (
-            <div>
-              <AnimatePresence>
-                {filtered.map((r) => (
-                  <RequestCard
-                    key={r._id}
-                    req={r}
-                    token={token}
-                    currentUserId={currentUserId}
-                    refresh={fetchRequests}
-                  />
-                ))}
-              </AnimatePresence>
-            </div>
+            <AnimatePresence>
+              {filtered.map((r) => (
+                <RequestCard
+                  key={r._id}
+                  req={r}
+                  token={token}
+                  currentUserId={currentUserId}
+                  refresh={fetchRequests}
+                />
+              ))}
+            </AnimatePresence>
           )}
         </motion.div>
       </div>

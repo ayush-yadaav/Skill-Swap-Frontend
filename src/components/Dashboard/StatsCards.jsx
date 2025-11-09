@@ -8,7 +8,7 @@ const StatsCards = ({ stats }) => {
           <span className="text-primary font-semibold">💬</span> Total Requests
         </p>
         <h3 className="text-3xl font-bold">{stats.totalRequests}</h3>
-        <p className="text-sm text-green-500 mt-1">+3 this week</p>
+        
       </div>
 
       {/* Active Swaps */}
@@ -17,7 +17,7 @@ const StatsCards = ({ stats }) => {
           <span className="text-secondary font-semibold">🔄</span> Active Swaps
         </p>
         <h3 className="text-3xl font-bold">{stats.activeSwaps}</h3>
-        <p className="text-sm text-yellow-500 mt-1">2 pending</p>
+       
       </div>
 
       {/* Completed */}
@@ -26,7 +26,6 @@ const StatsCards = ({ stats }) => {
           <span className="text-accent font-semibold">✅</span> Completed
         </p>
         <h3 className="text-3xl font-bold">{stats.completed}</h3>
-        <p className="text-sm text-green-600 mt-1">100% success</p>
       </div>
 
       {/* Avg Rating */}
@@ -35,7 +34,7 @@ const StatsCards = ({ stats }) => {
           <span className="text-primary font-semibold">⭐</span> Avg Rating
         </p>
         <h3 className="text-3xl font-bold">{stats.avgRating}</h3>
-        <p className="text-sm text-muted-foreground">12 reviews</p>
+        
       </div>
     </div>
   );
