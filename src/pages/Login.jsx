@@ -29,6 +29,7 @@ const Login = () => {
           primary: "#fff",
           secondary: "#22d3ee",
         },
+        duration:1500,
       });
       window.dispatchEvent(new Event("userChange"));
 
