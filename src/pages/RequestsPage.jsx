@@ -3,10 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, MessageSquare } from "lucide-react";
 import { getUserRequests, updateRequestStatus } from "../api/requestDataApi";
 import AfterLoginNavbar from "../components/Navbar/AfterLoginNavbar";
+import QuickMessageCard from "../pages/QuickMessageCard";
 
 /* ------------------- Request Card ------------------- */
 const RequestCard = ({ req, token, refresh, currentUserId }) => {
   const { sender, receiver, status, offeredSkill, requestedSkill, createdAt } = req;
+
+  const [showCard, setShowCard] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const timeAgo = (() => {
     const diff = Math.floor((Date.now() - new Date(createdAt)) / 60000);
@@ -58,22 +62,24 @@ const RequestCard = ({ req, token, refresh, currentUserId }) => {
       </div>
 
       {/* right: status + buttons */}
+      {/* right: status + buttons */}
       <div className="flex justify-center sm:justify-end items-center gap-2">
+
+        {/* Status badge */}
         <span
-          className={`text-xs sm:text-sm font-semibold px-3 py-1 rounded-full ${
-            status === "pending"
-              ? "bg-yellow-100 text-yellow-700"
-              : status === "accepted"
+          className={`text-xs sm:text-sm font-semibold px-3 py-1 rounded-full ${status === "pending"
+            ? "bg-yellow-100 text-yellow-700"
+            : status === "accepted"
               ? "bg-green-100 text-green-700"
               : status === "completed"
-              ? "bg-blue-100 text-blue-700"
-              : "bg-red-100 text-red-700"
-          }`}
+                ? "bg-blue-100 text-blue-700"
+                : "bg-red-100 text-red-700"
+            }`}
         >
           {status}
         </span>
 
-        {/* ✅ receiver buttons */}
+        {/* Pending → Accept / Reject */}
         {isReceiver && status === "pending" && (
           <div className="flex gap-1">
             <button
@@ -91,19 +97,64 @@ const RequestCard = ({ req, token, refresh, currentUserId }) => {
           </div>
         )}
 
-        {/* 💬 mark completed */}
+        {/* Accepted → Chat + Mark Completed */}
         {isReceiver && status === "accepted" && (
-          <button
-            onClick={() => handleAction("completed")}
-            className="bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full p-2 transition"
-          >
-            <MessageSquare className="w-4 h-4" />
-          </button>
+          <div className="flex gap-1">
+            {/* Chat Button */}
+            <button
+              onClick={() => {
+                setSelectedUser({
+                  id: sender?._id,      // correct field
+                  name: sender?.name,   // correct field
+                });
+                setShowCard(true);
+              }}
+              className="text-primary hover:text-secondary"
+            >
+              <MessageSquare className="w-5 h-5" />
+            </button>
+
+
+
+            {/* Mark Completed Button */}
+            <button
+              onClick={() => handleAction("completed")}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full p-2 transition"
+            >
+              <Check className="w-4 h-4" />
+            </button>
+          </div>
         )}
+
+        {/* Completed → nothing */}
+
+        <AnimatePresence>
+          {showCard && selectedUser && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 flex items-center justify-center bg-black/40 z-50"
+            >
+              <QuickMessageCard
+                receiverId={selectedUser.id}
+                receiverName={selectedUser.name}
+                onClose={() => setShowCard(false)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </div>
+
+
     </motion.div>
   );
 };
+
+
+
+
 
 /* ------------------- Requests Page ------------------- */
 const RequestsPage = () => {
@@ -157,11 +208,10 @@ const RequestsPage = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-full font-medium transition ${
-                  activeTab === tab
-                    ? "bg-primary text-white shadow"
-                    : "bg-white text-muted-foreground hover:bg-muted/30"
-                }`}
+                className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-full font-medium transition ${activeTab === tab
+                  ? "bg-primary text-white shadow"
+                  : "bg-white text-muted-foreground hover:bg-muted/30"
+                  }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>

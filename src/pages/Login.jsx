@@ -52,8 +52,7 @@ const Login = () => {
   return (
     <>
       <BeforeLoginNavbar />
-      <Toaster position="top-center" reverseOrder={false} />
-
+     
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 px-4 pt-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
